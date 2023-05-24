@@ -49,6 +49,17 @@ function App() {
     return null
   }
 
+  function resetGame() {
+    //Propiedad "fill" cambia todos los elementos en un arreglo por un valor estático
+    setBoard(Array(9).fill(null));
+    setTurn(TURNS.X);
+    setWinner(null);
+  }
+
+  function checkEndGame(newBoard) {
+    //Propiedad "every" de un array, verifica que todos lo valores del array cumplan una condicion, en este caso la codicion es una funcion flecha (return true)
+    return newBoard.every((square) => square !== null);    
+  }
    // CUANDO SE PASA EN PARAMETROS "UPDATEBOARD" SE PASA LA FUNCION PARA EJECUTARLA CUANDO SEA NECESARIO, POR EL CONTRARIO SI SE PASA "UPDATEBOARD()" SE EJECUTARIA LA FUNCION DEPENDIENDO CUANTAS VECES SE RENDERICE, MUCHAS NO SE QUIERE ESO.---> IR A <SQUARE>
   function updateBoard(index) {
     //Si el "board" (la tabla) tiene un valor no se escribira encima
@@ -66,14 +77,16 @@ function App() {
     //Envia la tabla nueva(actualizada) para la verificacion del GANADOR
     const newWinner = checkWinner(newBoard);
     if (newWinner) {
-      setWinner(newWinner);
-      alert(`Ganador ${newWinner}`);
+      setWinner(newWinner);      
+    } else if (checkEndGame(newBoard)) {
+      setWinner(false);
     }    
   }
  
   return (
     <main className="board">
       <h1>TRES EN RAYA</h1>
+      <button onClick={resetGame}>Empezar de nuevo</button>
       <section className="game">
         {board.map((_, index) => {
           return (
@@ -83,6 +96,7 @@ function App() {
           );
         })}
       </section>
+
       <section className="turn">
         <Square isSelected={turn == TURNS.X}>
           {TURNS.X}
@@ -91,6 +105,30 @@ function App() {
           {TURNS.O}
         </Square>
       </section>
+
+      { // Se usa "&&" si en una condicion solo se quiere verificar, mas no dar una "else"
+        (winner !== null) && (
+          <section className="winner">
+            <div className="text">
+              <h2>
+                {
+                  winner == false
+                  ? "Empate"
+                  : "Gano:"
+                }
+              </h2>
+
+              <header className="win">
+                {winner && <Square>{winner}</Square>}
+              </header>
+
+              <footer>
+                <button onClick={resetGame}>Empezar de nuevo</button>
+              </footer>
+            </div>
+          </section>        
+        ) //Fin condicion IF con "&&"
+      }
     </main>
   );
 }
